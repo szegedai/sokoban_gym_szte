@@ -3,74 +3,80 @@
 A feladat egy [Sokoban](https://hu.wikipedia.org/wiki/Sz%C3%B3koban) ágens készítése. A játék célja, hogy egy négyzehálós játéktéren dobozokat toljunk előre megadott helyekre.
 <!-- A játék a Sokoban egy egyszerűsített változata, ahol minden lépésben egy elemet kell ledobnunk. -->
 
-Egy lépésben két paramétert kell beállítanunk, hogy melyik oszlopba rakjuk le az elemet, és, hogy az elem a 4 forgatási iránya közül melyikbe álljon.
+<!-- Egy lépésben két paramétert kell beállítanunk, hogy melyik oszlopba rakjuk le az elemet, és, hogy az elem a 4 forgatási iránya közül melyikbe álljon. -->
+
+# Sokoban
+
+ A sokoban (倉庫番, „raktáros”) egy olyan fejtörő, ahol a játékosnak egy felülnézetes labirintusban kell dobozokat tologatnia a helyükre. Egyszerre csak egy dobozt lehet mozgatni, és csak tolni lehet, húzni nem. [ - Wikipédia](http://sokobano.de/wiki/index.php?title=Main_Page)
+
+A játékot bárki kipróbálhatja például az alábbi oldalon: [www.sokobanonline.com](https://www.sokobanonline.com/play/lessons/2246_lesson-1-1)
+
 
 <p align="center">
-  <img src="docs/media/tetris_sample.gif" width=400><br/>
-</p>
-
-# Tetris
-
-A tetris lényege, hogy a kjelzőn fentről lefele haladó 7 féle tetromino elemet úgy helyezzük el, hogy azok minél kevesebb lyukat hadjanak egymás között. Ha egy sor minden eleme lefedésre kerül, akkor az a sor eltűnik, több helyet hagyva az új elemek elhelyezésére. [Részletes szabályok](https://tetris.wiki/Tetris_Guideline).
-
-A játékot bárki kipróbálhatja például az alábbi oldalon: [tetr.io](https://tetr.io/)
-
-
-A 7 féle tetromino-t névvel ellátva az alábbi ábra tartalmatta:
-<p align="center">
-  <img src="docs/media/tetromino_names.png"><br/>
+  <img src="https://upload.wikimedia.org/wikipedia/commons/4/4b/Sokoban_ani.gif"><br/>
 </p>
 
 
 # Környezet
 
-A környezetben minden lépés egy elemleejtése a tábla tetejéről. 
+A [gymnasium](https://gymnasium.farama.org/index.html) környezetben az alábbi szabályok érvényesek: a cél, hogy az összes doboz valamelyik célba bekerüljön. Ehhez 4 fajta mozgást tud végezni a játékos: fel, le, jobbra és balra tud egyet lépni. Csak üres helyre, célba, vagy olyan helyre lehet lépni, ahol van egy doboz, de az a lépés hatására el tud tolódni. Dobozt csak üres helyre vagy célba lehet betolni, és egyszerre csak egy dobozt lehetséges mozgatni.
+
 
 |   |   |
 |-------------------|------------------------------|
-| Action space      | <pre>MultiDiscrete([*boardWidth*  4])</pre> |
-| Observation space | <pre>Dict(<br>  board: Box(0, 1, (*boardHeight*, *boardWidth*))<br>  piece: Discrete(7)<br>)</pre>|
+| Action space      | <pre>Discrete(5, start=1)</pre> |
+| Observation space | <pre>Box(0, 4, (*paddedSize*))</pre>|
 
-Ahol a *boardWidth* és *boardHeight* a tábla szélességét és magásságát jelölik.
 
-Akciók:
- - A lehetséges akciók első paraméterének annak az oszlopnak a számát kell megadnunk 0-tól indexelve, amelyikbe az adott elem legbaloldalibb kockáját szeretnénk rakni. Ha az általunk megadott oszlopba már nem lehetséges elemet rakni (például egy "Z" elemet akarunk az utolsó oszlopba rakni), akkor a legjobboldalibb még lehetséges oszlpba fogja ranki a rendszer.
- - A második paraméter az elforgatás, ami minden elem esetén 4 irány lehet, mégha bizonyos elemeknél ezek át is fednek.
+### Akciók
 
-Megfigyelések:
- - A megfigyeléseket egy Dictionary-ben kapjuk meg, aminek két kulcsa van: a *board* és a *piece*.
- - A *board* egy 2 dimenziós tömbben tartalmazza a jelenlegi táblát, ami 0, ha a mező még üres és 1, ha már tettünk oda elemet.
- - A *piece* egy egész szám, ami a lerakandó tetromino azonosítóját tartalmazza, a az értéke 0-tól az elemek száma - 1 tart. Mivel az elemek száma környezetenként eltérhez, ezért egy adott tertominohoz külön környezetekben külön azonosítók tartozhatnak.
- - Mivel a környezet egy Dictionary-ben tér vissza az elemekkel a *stable-baselines3* esetén alapértelmezettként a [MultiInputPolicy](https://stable-baselines3.readthedocs.io/en/master/modules/ppo.html#stable_baselines3.ppo.MultiInputPolicy) használata ajánlott. (Lásd: példa kódok)
+A következő ID-jű akciókat lehet végrehajtani a környezetben:
 
- A környezet a *TetrisGym* osztállyal példányosítható, az alábbi módon:
- ```python
- from tetris_gym.envs.tetris_gym import TetrisGym
+| ID | Akció  |
+|----|--------|
+| 1  | Fel    |
+| 2  | Le     |
+| 3  | Balra  |
+| 4  | Jobbra |
 
- env = TetrisGym(width=6, height=14, pieces=["O", "I", "J", "L"])
- ```
+### Megfigyelések
 
- Ahol a 3 játékmenet befolyásoló paraméter az alábbiak:
-  - *width*: a tábla szélessége
-  - *height*: a tábla magassága
-  - *pieces*: A játékban használható tetrominok neve, lehetséges értékek: *O, I, J, L, T, S, Z*
+A megfigyeléseket egy numpy tömbben kapjuk meg, és a játékbeli elemeket a következő számok jelölik:
 
-# Pontszámítás
+| ID | Állapot |
+|----|---------|
+| 0  | Üres    |
+| 1  | Fal     |
+| 2  | Doboz   |
+| 3  | Cél     |
+| 4  | Játékos |
 
-Minden lerakott elem 1 pontot ér. Ha egy lerakott elem hatására eltűnnek sorok, akkor ez az eltűnt sorok száma a négyzeten szorozva a tábla szélességével további jutalmat jelent.
+> Megjegyzés: Amennyiben felül kell definiálni az `observation`-t, az `info` dictionary `grid` elemében továbbra is elérhető lesz az eredeti tömb.
 
-$$ score = 1 + clearedLines^2 * boardWidth $$
+### Jutalomfüggvény
 
-Ahol a *clearedLines* az eltűntetett sorok számát a *boardWidth* pedig a pálya méretét jelenti.
-Ha mondjuk egy hagyományos 10 széles pályát egy lépéssel 3 sort eltüntetünk, akkor $1 + 3^2 * 10 = 91$ pontot kapunk.
+Az alapértelmezett jutalomfüggvény minden lépésben ellenőrzi, hogy az összes doboz célba ért-e, ha igen $1$-et, ha nem $0$ jutalmat ad. Ez természetesen egy `RewardWrapper` segítségével felülírható.
 
-Az alapértelmezett jutalom megegyezik a pontokkal.
+
+### Paraméterek
+
+A `SokobanEnv` létrehozásakor a következő paramétereket tudjuk változtatni:
+
+- **render_mode:** 'text' módban a konzolra kiírja minden lépésben az aktuális *grid*-et. 'rgb_array' módban használható a `RecordVideo` wrapper, alapértelmezetten None.
+- **size:** a bejárható játéktér mérete, ebbe beletartozik a pályát körülvevő fal is. Alapértelmezetten (5, 5) tuple. TODO
+- **padded_size:** a *size* méretű játékteret falakkal lehet kibővíteni a megadott méretre. Ez akkor lehet hasznos ha például egy (5, 5) méretű játékteren tanított modellt szeretnénk később kiértékelni (7, 7) méretű játéktérrel is. Alapértelmezetten (7, 7) tuple. TODO
+- **num_boxes:** a játéktérre kerülő dobozok száma (természetesen ugyanennyi cél is kerül a játéktérre). Alapértelmezetten 2 int, de lehet list(int) is, például [1, 2, 3], ekkor minden egyes pályageneráláskor véletlenszerűen 1, 2, vagy 3 doboz lesz. TODO
+- **time_limit:** A maximális lépésszám epizódonként. Alapértelmezetten 50 int.
+
+# Pontszámítás TODO
+
+A pontszámítás megegyezik az `evaluate` fügvény eredményével, azaz: $$\text{Score} = \frac{\text{epizódokban kapott rewardok összege}}{\text{epizódok száma}}$$
 
 # Telepítés és futtatás
 
-A rendszer egyaránt használható google colabon és hagyományos számítógépeken. A környezet egy átlagos laptop processzorán is kényelmesen futtatható.
+A rendszer egyaránt használható Google Colabon és lokálisan is. A környezet egy átlagos laptop processzorán is kényelmesen futtatható.
 
-Példa [colab notebook](https://colab.research.google.com/drive/1ql97tMmdBu_349S6cxWMBxbeMUcoPr7v?usp=sharing).
+Példa [Colab notebook](TODO).
 
 Az alábbi útmutatóban [conda](https://docs.conda.io/en/latest/) virtuális környezetet fogunk használni.
 
@@ -97,21 +103,21 @@ Példakód kipróbálása:
 python example_base.py
 ```
 
-# Kiértékelés és követelmények
+# Követelmények
 
-A végleges környezet a hagyományos Tetris játékhoz hasonlóan 10 széles és 20 magas táblát használ, a környezetben mind a 7 féle tetromino-t használjuk.
+A végleges környezet a hagyományos TODO (10, 10) méretű táblát használ, és maximálisan 4 TODO dobozt kell a helyére pakolni.
 
-Az ágenst a [agent/agent.py](agent/agent.py) fájlban kell megvalósítani. Ezt fogja meghívni a végleges kiértékelő rendszer.
+Az ágenst a [agent/agent.py](agent/agent.py) fájlban kell megvalósítani. Ezt fogja meghívni a végleges kiértékelő rendszer minden egyes lépésben.
 
 Az ágensben az *act* metódust kell módosítani, ami a környezetből kapott megfigyelés alapján visszaadja a következő lépést.
 
 Ezzen felül a konstruktorban lehetőség van az ágensünk inicializálására, például egy korábban tanult modell betöltésére. Illetve, amennyiben használtunk *wrapper*-eket a környezet modosításához azokat is lehtőségünk van itt létrehozni.
 
-Egy példa ágens, ami egy betanított Stable Baselines3 modellt használ az alábbi módon nézz ki:
+Egy példa ágens, ami egy betanított Stable-Baselines3 modellt használ az alábbi módon nézz ki:
   
   ```python
   from stable_baselines3 import A2C
-from tetris_gym.wrappers.observation import ExtendedObservationWrapper
+from sokoban_gym.wrappers.observation import ImageObservationWrapper
 
 class Agent:
     """
@@ -124,12 +130,12 @@ class Agent:
         vagy a környezet wrapper-ekkel való kiterjesztésére.
         """
         
-        self.model = A2C.load("agent/model_20x10")
+        self.model = A2C.load("models/Sokoban-v1_5_8_1box_A2C_CNN")
         
         # A környezetet kiterjeszthetjük wrapper-ek segítségével.
         # Ha tanításkor modosítottuk a megfigyeléseket,
         # akkor azt a módosítást kiértékeléskor is meg kell adnunk.
-        self.observation_wrapper = ExtendedObservationWrapper(env)
+        self.observation_wrapper = ImageObservationWrapper(env)
 
     def act(self, observation):
         """
@@ -146,9 +152,10 @@ class Agent:
 
 ## Felhasználható csomagok
 
-Természetesen a Stable Baselines3 használata nem kötelező, lehetőség van tetszőleges modell, illetve egyénileg írt kód használatára is.
+Természetesen a Stable-Baselines3 használata nem kötelező, lehetőség van tetszőleges modell, illetve egyénileg írt kód használatára is.
 
 A kiértékelő rendszerben az alábbi csomagok vannak telepítve.
+TODO
 
 Új csomagok telepíthetők, ha erre van igényetek kérlek jelezzétek a kötelező programhoz létrehozott coospace forumon.
 
@@ -166,9 +173,9 @@ A HuggingFace repository-ba mindent fel kell tölteni, ami szükséges a kód fu
 
 ### Példa
 
-Az alábbi [notebook](https://colab.research.google.com/drive/1iO9J_VzrtSIVcjC5a3q-9pk9UtfHX1SZ?usp=sharing), illetve a lenti parancsok megmutatják hogyan tudtok betanítani, leellenőrizni és feltöteni a Hugging Face-re egy ágenst.
+Az alábbi [notebook](TODO), illetve a lenti parancsok megmutatják hogyan tudtok betanítani, leellenőrizni és feltöteni a Hugging Face-re egy ágenst.
 
-A modellt betíníthatod a [trani.py](train.py) fájl segítségével, ez létre fog hozni egy modellt az *agent* mappában.
+A modellt betíníthatod a [train.py](train.py) fájl segítségével, ez létre fog hozni egy modellt az *agent* mappában.
 ```bash
 python train.py
 ```
@@ -209,12 +216,10 @@ Az utolsó feltöltés log-ját a neptun kódotok segítségébvel az alábbi li
 Fontos, hogy a záró / szükséges.
 
 # Követelmények
+
+TODO
 A kötelező programért szerezhető 30 pont begyűjtéséhez fel kell töltened egy rendszert, ami a szerveren történő kiértékeléskor legalább 40 score-t ér el.
 
 A legjobb 5 felöltő mentesül az elméleti zh alól.
 
 A további helyezések extra pluszpontokat érnek, amiknek a pontos szabályait a későbbiekben részletezzük.
-
-## Köszönenyílvánítás
-
-Köszönet  [Viet Nguyen](https://github.com/uvipen)-nek a tetris környezet alapjaiért.
