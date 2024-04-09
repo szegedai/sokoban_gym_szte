@@ -6,7 +6,7 @@ from sokoban_gym.wrappers.reward import CustomRewardWrapper
 from utils.eval_utils import evaluate, create_videos
 
 # Környezet létrehozása
-env = gym.make('Sokoban-v1', size=(5, 5), padded_size=(8, 8), num_boxes=1, render_mode='rgb_array')
+env = gym.make('Sokoban-v1', size=(5, 5), padded_size=(8, 8), num_boxes=2, render_mode='rgb_array')
 
 # A megfigyelések kiterjesztése a tábla alapján számolt új jellemzők segítségével.
 env = ImageObservationWrapper(env)
@@ -15,7 +15,7 @@ env = ImageObservationWrapper(env)
 env = CustomRewardWrapper(env)
 
 # Modell létrehozása
-model = A2C('MlpPolicy',  env, verbose=1, seed=42)
+model = A2C('CnnPolicy',  env, verbose=1, seed=42)
 
 print(model.policy)
 

@@ -39,7 +39,7 @@ def evaluate_agent(env, agent, ep_num=100, seed=0):
 
     sum_reward = 0
 
-    for _ in range(ep_num): 
+    for _ in tqdm(range(ep_num)): 
       
         obs, info = env_test.reset()
         score = 0
