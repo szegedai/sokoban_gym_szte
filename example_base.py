@@ -1,19 +1,21 @@
 from stable_baselines3 import A2C
+from stable_baselines3.common.sb2_compat.rmsprop_tf_like import RMSpropTFLike
 from sokoban_gym.envs.sokoban_env import SokobanEnv
 import gymnasium as gym
-#from tetris_gym.wrappers.observation import ExtendedObservationWrapper
 from utils.eval_utils import evaluate, create_videos
 
 # Környezet létrehozása
-env = gym.make('Sokoban-v1', size=(5, 5), padded_size=(8, 8), num_boxes=1, render_mode='rgb_array')
+env = gym.make('Sokoban-v1', size=(5, 5), padded_size=(7, 7), num_boxes=[1, 2], render_mode='rgb_array')
+
+env.reset(seed=42)
 
 # Modell létrehozása
-model = A2C('MlpPolicy',  env, verbose=1, seed=42)
+model = A2C('MlpPolicy', env, policy_kwargs=dict(optimizer_class=RMSpropTFLike, optimizer_kwargs=dict(eps=1e-5)), verbose=1, seed=42)
 
 print(model.policy)
 
 # Tanulás
-model.learn(total_timesteps=100000)
+model.learn(total_timesteps=10000)
 
 # Model kimentése
 model.save("models/Sokoban-v1_5_8_1box_A2C")

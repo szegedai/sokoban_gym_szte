@@ -2,6 +2,7 @@ import numpy as np
 import gymnasium as gym
 from gymnasium import spaces
 from sokoban_gym.utils.game_utils import generate_and_convert_room, room_to_tiny_world_rgb
+import random
 
 EMPTY = 0
 WALL = 1
@@ -118,6 +119,11 @@ class SokobanEnv(gym.Env):
 
     def reset(self, seed=None, options=None):
         super().reset(seed=seed)
+
+        if seed is not None:
+            random.seed(seed)
+            np.random.seed(seed)
+
         self.num_step = 0
         self.prev_num_correct_boxes = 0
 
@@ -152,7 +158,7 @@ class SokobanEnv(gym.Env):
 
     def render(self):
         if self.render_mode == 'rgb_array':
-            return room_to_tiny_world_rgb(self.grid)
+            return room_to_tiny_world_rgb(self.grid, 32)
 
         if self.render_mode == 'text':
             for row in self.grid:

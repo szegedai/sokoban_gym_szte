@@ -63,6 +63,8 @@ def create_videos(env, model, ep_num=2, seed=0, folder="videos"):
     env = gym.wrappers.RecordVideo(env, folder)
     env_test = env
 
+    env_test.metadata["render_fps"] = 4
+
     env_test.reset(seed=seed)
 
     sum_reward = 0
