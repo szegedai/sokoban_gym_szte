@@ -76,7 +76,7 @@ A pontszámítás megegyezik az `evaluate` fügvény eredményével, azaz: $$\te
 
 A rendszer egyaránt használható Google Colabon és lokálisan is. A környezet egy átlagos laptop processzorán is kényelmesen futtatható.
 
-Példa [Colab notebook](<!-- TODO -->).
+Példa [Colab notebook](https://colab.research.google.com/drive/1hDlN6tgv2bRXcPK__GNrzTeX0WtrqH5H?usp=sharing).
 
 Az alábbi útmutatóban [conda](https://docs.conda.io/en/latest/) virtuális környezetet fogunk használni.
 
