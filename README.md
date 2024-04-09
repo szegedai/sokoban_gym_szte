@@ -63,12 +63,12 @@ Az alapértelmezett jutalomfüggvény minden lépésben ellenőrzi, hogy az öss
 A `SokobanEnv` létrehozásakor a következő paramétereket tudjuk változtatni:
 
 - **render_mode:** 'text' módban a konzolra kiírja minden lépésben az aktuális *grid*-et. 'rgb_array' módban használható a `RecordVideo` wrapper, alapértelmezetten None.
-- **size:** a bejárható játéktér mérete, ebbe beletartozik a pályát körülvevő fal is. Alapértelmezetten (5, 5) tuple. TODO
-- **padded_size:** a *size* méretű játékteret falakkal lehet kibővíteni a megadott méretre. Ez akkor lehet hasznos ha például egy (5, 5) méretű játékteren tanított modellt szeretnénk később kiértékelni (7, 7) méretű játéktérrel is. Alapértelmezetten (7, 7) tuple. TODO
-- **num_boxes:** a játéktérre kerülő dobozok száma (természetesen ugyanennyi cél is kerül a játéktérre). Alapértelmezetten 2 int, de lehet list(int) is, például [1, 2, 3], ekkor minden egyes pályageneráláskor véletlenszerűen 1, 2, vagy 3 doboz lesz. TODO
+- **size:** a bejárható játéktér mérete, ebbe beletartozik a pályát körülvevő fal is. Alapértelmezetten (5, 5) tuple. <!-- TODO -->
+- **padded_size:** a *size* méretű játékteret falakkal lehet kibővíteni a megadott méretre. Ez akkor lehet hasznos ha például egy (5, 5) méretű játékteren tanított modellt szeretnénk később kiértékelni (7, 7) méretű játéktérrel is. Alapértelmezetten (7, 7) tuple. <!-- TODO -->
+- **num_boxes:** a játéktérre kerülő dobozok száma (természetesen ugyanennyi cél is kerül a játéktérre). Alapértelmezetten 2 int, de lehet list(int) is, például [1, 2, 3], ekkor minden egyes pályageneráláskor véletlenszerűen 1, 2, vagy 3 doboz lesz. <!-- TODO -->
 - **time_limit:** A maximális lépésszám epizódonként. Alapértelmezetten 50 int.
 
-# Pontszámítás TODO
+# Pontszámítás <!-- TODO -->
 
 A pontszámítás megegyezik az `evaluate` fügvény eredményével, azaz: $$\text{Score} = \frac{\text{epizódokban kapott rewardok összege}}{\text{epizódok száma}}$$
 
@@ -76,7 +76,7 @@ A pontszámítás megegyezik az `evaluate` fügvény eredményével, azaz: $$\te
 
 A rendszer egyaránt használható Google Colabon és lokálisan is. A környezet egy átlagos laptop processzorán is kényelmesen futtatható.
 
-Példa [Colab notebook](TODO).
+Példa [Colab notebook](<!-- TODO -->).
 
 Az alábbi útmutatóban [conda](https://docs.conda.io/en/latest/) virtuális környezetet fogunk használni.
 
@@ -105,7 +105,7 @@ python example_base.py
 
 # Követelmények
 
-A végleges környezet a hagyományos TODO (10, 10) méretű táblát használ, és maximálisan 4 TODO dobozt kell a helyére pakolni.
+A végleges környezet a hagyományos <!-- TODO --> (10, 10) méretű táblát használ, és maximálisan 4 <!-- TODO --> dobozt kell a helyére pakolni.
 
 Az ágenst a [agent/agent.py](agent/agent.py) fájlban kell megvalósítani. Ezt fogja meghívni a végleges kiértékelő rendszer minden egyes lépésben.
 
@@ -155,7 +155,7 @@ class Agent:
 Természetesen a Stable-Baselines3 használata nem kötelező, lehetőség van tetszőleges modell, illetve egyénileg írt kód használatára is.
 
 A kiértékelő rendszerben az alábbi csomagok vannak telepítve.
-TODO
+<!-- TODO -->
 
 Új csomagok telepíthetők, ha erre van igényetek kérlek jelezzétek a kötelező programhoz létrehozott coospace forumon.
 
@@ -173,7 +173,7 @@ A HuggingFace repository-ba mindent fel kell tölteni, ami szükséges a kód fu
 
 ### Példa
 
-Az alábbi [notebook](TODO), illetve a lenti parancsok megmutatják hogyan tudtok betanítani, leellenőrizni és feltöteni a Hugging Face-re egy ágenst.
+Az alábbi [notebook](<!-- TODO -->), illetve a lenti parancsok megmutatják hogyan tudtok betanítani, leellenőrizni és feltöteni a Hugging Face-re egy ágenst.
 
 A modellt betíníthatod a [train.py](train.py) fájl segítségével, ez létre fog hozni egy modellt az *agent* mappában.
 ```bash
@@ -217,7 +217,7 @@ Fontos, hogy a záró / szükséges.
 
 # Követelmények
 
-TODO
+<!-- TODO -->
 A kötelező programért szerezhető 30 pont begyűjtéséhez fel kell töltened egy rendszert, ami a szerveren történő kiértékeléskor legalább 40 score-t ér el.
 
 A legjobb 5 felöltő mentesül az elméleti zh alól.
