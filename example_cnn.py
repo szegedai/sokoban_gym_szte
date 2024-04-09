@@ -1,4 +1,4 @@
-from stable_baselines3 import A2C, PPO, SAC, TD3
+from stable_baselines3 import A2C
 from stable_baselines3.common.sb2_compat.rmsprop_tf_like import RMSpropTFLike
 from sokoban_gym.envs.sokoban_env import SokobanEnv
 import gymnasium as gym
@@ -15,7 +15,7 @@ env = ImageObservationWrapper(env, scale=8)
 env.reset(seed=42)
 
 # Modell létrehozása
-model = PPO('CnnPolicy', env, policy_kwargs=dict(optimizer_class=RMSpropTFLike, optimizer_kwargs=dict(eps=1e-5)), verbose=1, seed=42)
+model = A2C('CnnPolicy', env, policy_kwargs=dict(optimizer_class=RMSpropTFLike, optimizer_kwargs=dict(eps=1e-5)), verbose=1, seed=42)
 
 print(model.policy)
 
