@@ -60,7 +60,7 @@ def evaluate_agent(env, agent, ep_num=100, seed=0):
     return sum_reward / ep_num
 
 def create_videos(env, model, ep_num=2, seed=0, folder="videos"):
-    env = gym.wrappers.RecordVideo(env, folder)
+    env = gym.wrappers.RecordVideo(env, folder, episode_trigger=lambda x: True)
     env_test = env
 
     env_test.metadata["render_fps"] = 4
