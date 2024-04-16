@@ -36,7 +36,7 @@ class SokobanEnv(gym.Env):
         self.num_step = 0
         self.prev_num_correct_boxes = 0
 
-        self.grid = np.zeros(self.size, dtype=int)
+        self.grid = None
         self._player_location = None
         self._target_locations = None
 
