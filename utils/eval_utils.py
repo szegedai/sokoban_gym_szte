@@ -1,5 +1,8 @@
 import gymnasium as gym
 from tqdm import tqdm
+from sokoban_gym.envs.sokoban_env import SokobanEnv
+from agent.agent import Agent
+
 
 def evaluate(env, model, ep_num=100, seed=0):
     env_test = env
@@ -58,6 +61,38 @@ def evaluate_agent(env, agent, ep_num=100, seed=0, disable_progress_bar=False):
     env_test.close()
 
     return sum_reward
+
+def evaluate_agent_competition(ep_num=5, seed=0, disable_progress_bar=False):
+    box_size_combinations = [
+        (5, 1),
+        (5, 2),
+        (6, 1),
+        (6, 2),
+        # (6, 3),
+        # (7, 2),
+        # (7, 3),
+        # (8, 3),
+        # (9, 3),
+        # (10, 3),
+        # (10, 4),
+        # (11, 4),
+        # (11, 5),
+        # (12, 6),
+    ]
+
+    seed = 76352
+
+    # Környezet létrehozása
+    correct_results = 0
+
+    for size, num_boxes in tqdm(box_size_combinations):
+        env = SokobanEnv(size=(size, size), padded_size=(12, 12), num_boxes=num_boxes, render_mode='rgb_array')
+
+        agent = Agent(env)
+
+        correct_results += evaluate_agent(env, agent, 50, seed=seed, disable_progress_bar=True)
+    
+    return correct_results
 
 def create_videos(env, model, ep_num=2, seed=0, folder="videos"):
     env = gym.wrappers.RecordVideo(env, folder, episode_trigger=lambda x: True)
