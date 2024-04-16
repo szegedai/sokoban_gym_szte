@@ -62,7 +62,9 @@ def evaluate_agent(env, agent, ep_num=100, seed=0, disable_progress_bar=False):
 
     return sum_reward
 
-def evaluate_agent_competition(ep_num_multiplier=10, seed=0, disable_progress_bar=False):
+def evaluate_agent_competition(max_task=400, seed=0, disable_progress_bar=True):
+    ep_num_multiplier = int(max_task / 40)
+    
     box_size_combinations = [
         (5, 1, 5),
         (5, 2, 5),
@@ -89,6 +91,7 @@ def evaluate_agent_competition(ep_num_multiplier=10, seed=0, disable_progress_ba
         correct_results += evaluate_agent(env, agent, num_episodes*ep_num_multiplier, seed=seed, disable_progress_bar=disable_progress_bar)
     
     return correct_results
+
 
 def create_videos(env, model, ep_num=2, seed=0, folder="videos"):
     env = gym.wrappers.RecordVideo(env, folder, episode_trigger=lambda x: True)
