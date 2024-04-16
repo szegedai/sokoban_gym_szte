@@ -62,7 +62,7 @@ def evaluate_agent(env, agent, ep_num=100, seed=0, disable_progress_bar=False):
 
     return sum_reward
 
-def evaluate_agent_competition(max_task=400, seed=0, disable_progress_bar=True):
+def evaluate_agent_competition(max_task_num=400, seed=0, disable_progress_bar=True):
     ep_num_multiplier = int(max_task / 40)
     
     box_size_combinations = [
