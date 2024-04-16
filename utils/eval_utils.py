@@ -90,7 +90,11 @@ def evaluate_agent_competition(max_task=400, seed=0, disable_progress_bar=True):
 
         correct_results += evaluate_agent(env, agent, num_episodes*ep_num_multiplier, seed=seed, disable_progress_bar=disable_progress_bar)
     
-    return correct_results
+    print()
+    print(f"Result: {int(correct_results)} correct tasks out of {ep_num_multiplier*40}")
+    print()
+
+    return int(correct_results)
 
 
 def create_videos(env, model, ep_num=2, seed=0, folder="videos"):
