@@ -12,7 +12,7 @@ class Agent:
         vagy a környezet wrapper-ekkel való kiterjesztésére.
         """
         
-        self.model = A2C.load("models/Sokoban-v1_5_8_1box_A2C_CNN")
+        self.model = A2C.load("agent/Sokoban-A2C-CNN")
         
         # A környezetet kiterjeszthetjük wrapper-ek segítségével.
         # Ha tanításkor modosítottuk a megfigyeléseket,

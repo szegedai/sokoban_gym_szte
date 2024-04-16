@@ -33,13 +33,13 @@ def evaluate(env, model, ep_num=100, seed=0):
 
     return sum_reward / ep_num
 
-def evaluate_agent(env, agent, ep_num=100, seed=0):
+def evaluate_agent(env, agent, ep_num=100, seed=0, disable_progress_bar=False):
     env_test = env
     env_test.reset(seed=seed)
 
     sum_reward = 0
 
-    for _ in tqdm(range(ep_num)): 
+    for _ in tqdm(range(ep_num), disable=disable_progress_bar): 
       
         obs, info = env_test.reset()
         score = 0
@@ -57,7 +57,7 @@ def evaluate_agent(env, agent, ep_num=100, seed=0):
         
     env_test.close()
 
-    return sum_reward / ep_num
+    return sum_reward
 
 def create_videos(env, model, ep_num=2, seed=0, folder="videos"):
     env = gym.wrappers.RecordVideo(env, folder, episode_trigger=lambda x: True)
