@@ -62,35 +62,31 @@ def evaluate_agent(env, agent, ep_num=100, seed=0, disable_progress_bar=False):
 
     return sum_reward
 
-def evaluate_agent_competition(ep_num=5, seed=0, disable_progress_bar=False):
+def evaluate_agent_competition(ep_num_multiplier=10, seed=0, disable_progress_bar=False):
     box_size_combinations = [
-        (5, 1),
-        (5, 2),
-        (6, 1),
-        (6, 2),
-        # (6, 3),
-        # (7, 2),
-        # (7, 3),
-        # (8, 3),
-        # (9, 3),
-        # (10, 3),
-        # (10, 4),
-        # (11, 4),
-        # (11, 5),
-        # (12, 6),
+        (5, 1, 5),
+        (5, 2, 5),
+        (6, 1, 5),
+        (6, 2, 5),
+        (6, 3, 4),
+        (7, 2, 4),
+        (7, 3, 3),
+        (8, 3, 2),
+        (8, 4, 2),
+        (9, 4, 2),
+        (10, 4, 2),
+        (10, 5, 1)
     ]
-
-    seed = 76352
 
     # Környezet létrehozása
     correct_results = 0
 
-    for size, num_boxes in tqdm(box_size_combinations):
-        env = SokobanEnv(size=(size, size), padded_size=(12, 12), num_boxes=num_boxes, render_mode='rgb_array')
+    for size, num_boxes, num_episodes in tqdm(box_size_combinations):
+        env = SokobanEnv(size=(size, size), padded_size=(10, 10), num_boxes=num_boxes, render_mode='rgb_array')
 
         agent = Agent(env)
 
-        correct_results += evaluate_agent(env, agent, 50, seed=seed, disable_progress_bar=True)
+        correct_results += evaluate_agent(env, agent, num_episodes*ep_num_multiplier, seed=seed, disable_progress_bar=disable_progress_bar)
     
     return correct_results
 
