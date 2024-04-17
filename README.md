@@ -63,20 +63,38 @@ Az alapértelmezett jutalomfüggvény minden lépésben ellenőrzi, hogy az öss
 A `SokobanEnv` létrehozásakor a következő paramétereket tudjuk változtatni:
 
 - **render_mode:** 'text' módban a konzolra kiírja minden lépésben az aktuális *grid*-et. 'rgb_array' módban használható a `RecordVideo` wrapper, alapértelmezetten None.
-- **size:** a bejárható játéktér mérete, ebbe beletartozik a pályát körülvevő fal is. Alapértelmezetten (5, 5) tuple. <!-- TODO -->
-- **padded_size:** a *size* méretű játékteret falakkal lehet kibővíteni a megadott méretre. Ez akkor lehet hasznos ha például egy (5, 5) méretű játékteren tanított modellt szeretnénk később kiértékelni (7, 7) méretű játéktérrel is. Alapértelmezetten (7, 7) tuple. <!-- TODO -->
-- **num_boxes:** a játéktérre kerülő dobozok száma (természetesen ugyanennyi cél is kerül a játéktérre). Alapértelmezetten 2 int, de lehet list(int) is, például [1, 2, 3], ekkor minden egyes pályageneráláskor véletlenszerűen 1, 2, vagy 3 doboz lesz. <!-- TODO -->
+- **size:** a bejárható játéktér mérete, ebbe beletartozik a pályát körülvevő fal is. Alapértelmezetten (5, 5) tuple. Amennyiben az elemeket egy listában adjuk meg, akkor a környezet véletlenszerűen fog a különböző méretű feladatok közül választani, pl: [(5, 5), (6, 6), (7, 7)] 
+- **padded_size:** a *size* méretű játékteret falakkal lehet kibővíteni a megadott méretre. Ez akkor lehet hasznos ha például egy (5, 5) méretű játékteren tanított modellt szeretnénk később kiértékelni (10, 10) méretű játéktérrel is. Alapértelmezetten (10, 10) tuple.
+- **num_boxes:** a játéktérre kerülő dobozok száma (természetesen ugyanennyi cél is kerül a játéktérre). Alapértelmezetten 2 int, de lehet list(int) is, például [1, 2, 3], ekkor minden egyes pályageneráláskor véletlenszerűen 1, 2, vagy 3 doboz lesz.
 - **time_limit:** A maximális lépésszám epizódonként. Alapértelmezetten 50 int.
 
-# Pontszámítás <!-- TODO -->
+# Pontszámítás
 
-A pontszámítás megegyezik az `evaluate` fügvény eredményével, azaz: $$\text{Score} = \frac{\text{epizódokban kapott rewardok összege}}{\text{epizódok száma}}$$
+A végső pontszámításnál minden helyesen megoldott pálya 1 pontot ér. A kiértékelő adatbázisban 400 példa kerül lefuttatásra (így ez a maximum pontszám):
+A kiértékelő halmazban az alábbi méretű és darabszámú pályák vannak:
+
+| Pálya méret | Kockák száma | Pályák száma |
+| ------ | ------ | ------ |
+| 5 x 5  | 1 | 50 |
+| 5 x 5  | 2 | 50 |
+| 6 x 6 | 1 | 50 |
+| 6 x 6 | 2 | 50 |
+| 6 x 6 | 3 | 40 |
+| 7 x 7 | 2 | 40 |
+| 7 x 7 | 3 | 30 |
+| 8 x 8 | 3 | 20 |
+| 8 x 8 | 4 | 20 |
+| 9 x 9 | 4 | 20 |
+| 10 x 10 | 4 | 20 |
+| 10 x 10 | 5 | 10 |
+
+<!-- A pontszámítás megegyezik az `evaluate` fügvény eredményével, azaz: $$\text{Score} = \frac{\text{epizódokban kapott rewardok összege}}{\text{epizódok száma}}$$ -->
 
 # Telepítés és futtatás
 
 A rendszer egyaránt használható Google Colabon és lokálisan is. A környezet egy átlagos laptop processzorán is kényelmesen futtatható.
 
-Példa [Colab notebook](https://colab.research.google.com/drive/1hDlN6tgv2bRXcPK__GNrzTeX0WtrqH5H?usp=sharing).
+Példa [Colab notebook](https://colab.research.google.com/drive/1y5pph3rvIUb8dLCLntNUC-Z-LRW283xi?usp=sharing).
 
 Az alábbi útmutatóban [conda](https://docs.conda.io/en/latest/) virtuális környezetet fogunk használni.
 
@@ -102,3 +120,121 @@ Példakód kipróbálása:
 ```bash
 python example_base.py
 ```
+
+
+# Követelmények
+
+A végleges környezet a hagyományos (10, 10) méretű táblát használ, és maximálisan 6 dobozt kell a helyére pakolni.
+
+Az ágenst a [agent/agent.py](agent/agent.py) fájlban kell megvalósítani. Ezt fogja meghívni a végleges kiértékelő rendszer minden egyes lépésben.
+
+Az ágensben az *act* metódust kell módosítani, ami a környezetből kapott megfigyelés alapján visszaadja a következő lépést.
+
+Ezzen felül a konstruktorban lehetőség van az ágensünk inicializálására, például egy korábban tanult modell betöltésére. Illetve, amennyiben használtunk *wrapper*-eket a környezet modosításához azokat is lehtőségünk van itt létrehozni.
+
+Egy példa ágens, ami egy betanított Stable-Baselines3 modellt használ az alábbi módon nézz ki:
+
+  ```python
+from stable_baselines3 import A2C
+from sokoban_gym.wrappers.observation import ImageObservationWrapper
+
+class Agent:
+    """
+    A kötelező programként beadandó ágens leírása.
+    """
+
+    def __init__(self, env) -> None:
+        """
+        A konsztruktorban van lehetőség például a modell betöltésére
+        vagy a környezet wrapper-ekkel való kiterjesztésére.
+        """
+
+        self.model = A2C.load("models/Sokoban-v1_5_8_1box_A2C_CNN")
+
+        # A környezetet kiterjeszthetjük wrapper-ek segítségével.
+        # Ha tanításkor modosítottuk a megfigyeléseket,
+        # akkor azt a módosítást kiértékeléskor is meg kell adnunk.
+        self.observation_wrapper = ImageObservationWrapper(env)
+
+    def act(self, observation):
+        """
+        A megfigyelés alapján visszaadja a következő lépést.
+        Ez a függvény fogja megadni az ágens működését.
+        """
+
+        # Ha tanításkor modosítottuk a megfigyeléseket,
+        # akkor azt a módosítást kiértékeléskor is meg kell adnunk.
+        extended_obsetvation = self.observation_wrapper.observation(observation)
+
+        return self.model.predict(extended_obsetvation, deterministic=True)
+  ```
+
+## Felhasználható csomagok
+
+Természetesen a Stable-Baselines3 használata nem kötelező, lehetőség van tetszőleges modell, illetve egyénileg írt kód használatára is.
+
+Új csomagok telepíthetők, ha erre van igényetek kérlek jelezzétek a kötelező programhoz létrehozott coospace forumon.
+
+## Ranglista
+
+A ranglista és a feltöltés az alábbi oldalon érhető el:
+
+[https://ai.inf.u-szeged.hu/rl/2024/](https://ai.inf.u-szeged.hu/rl/2024/)
+
+## Feltöltés
+
+Az elkészült kódokat fel kell tötenetek HuggingFace-re. Majd, ha úgyérzitek, hogy minden rendben van, akkor a [ranglista oldalán](https://ai.inf.u-szeged.hu/rl/2024/upload/) tudjátok elindítani a hivatalos kiértékelést. Ehhez meg kell adnotok a HuggingFace repository nevét, ahova feltöltöttétek a kódotokat és a modelleket, a neptun azonosítótokat és egy megjelenítéshez használni kívánt nevet.
+
+A HuggingFace repository-ba mindent fel kell tölteni, ami szükséges a kód futtatásához. Ez magában foglalja a kódokat és a szükséges modelleket. Az *agent.py*-nak a repository gyökérkönyvtárában kell lennie. Példát erre az alábbi repository-ban találtok: [szterlcourse/my_sokoban_agent](https://huggingface.co/szterlcourse/my_sokoban_agent/tree/main)
+
+### Példa
+
+Az alábbi [notebook](https://colab.research.google.com/drive/1y5pph3rvIUb8dLCLntNUC-Z-LRW283xi?usp=sharing), illetve a lenti parancsok megmutatják hogyan tudtok betanítani, leellenőrizni és feltöteni a Hugging Face-re egy ágenst.
+
+A modellt betíníthatod a [train.py](train.py) fájl segítségével, ez létre fog hozni egy modellt az *agent* mappában.
+```bash
+python train.py
+```
+
+Fontos, hogyha tanításkor modosítottál a tanuló algoritmuson, a megfigyeléseken... vagy csak egyéni szabályokat szeretnél írni, akkor már a korábban említett [agent/agent.py](agent/agent.py) fájlt kell ehhez módosítanod.
+
+A kész ágenst az [evaluate.py](evaluate.py) fájl segítségével ellenőrizheted.
+```bash
+python evaluate.py
+```
+
+A modellt feltöltheted a HuggingFace-re a [upload.py](upload.py) fájl segítségével.
+
+Ehhez viszont először meg kell adnod a fájlban a létrehozni (vagy felülírni) kívánt repository nevét. Illetve a Hugging Face tokenedet. Ezt az alábbi helyen tudod létrehozni a Hugging Face-en belül: [Settings/Access Tokens](https://huggingface.co/settings/token)
+
+```python
+# Ezt át kell írni a saját felhasználónevedre és az általad választott repó nevére
+# Pl.: "szterlcourse/my_agent"
+repo_id = ""
+
+# Ide be kell írni a saját tokenedet, amit a Hugging Face oldalán tudsz létrehozni (https://huggingface.co/settings/token)
+token = ""
+```
+
+Ha ezek megvannak, akkor a fájl futtatásával feltöltheted a Hugging Face-re a kódot és a modelleket.
+```bash
+python upload.py
+```
+
+A feltöltést kézzel is megteheted, de ezekben van arra példa, hogy hogyan lehet kódból létrehozni egy Hugging Face repository-t és feltölteni bele a kódot és a modelleket.
+
+## Hibák megjelentetése
+
+Az utolsó feltöltés log-ját a neptun kódotok segítségébvel az alábbi link módosításával tudjátok megnézni:
+
+[https://ai.inf.u-szeged.hu/rl/2024/log/\<NEPTUNKOD\>/](https://ai.inf.u-szeged.hu/rl/2024/log/NEPTUNKOD/)
+
+Fontos, hogy a záró / szükséges.
+
+# Követelmények
+
+A kötelező teljesítéséhez fel kell töltened egy rendszert, ami a szerveren történő kiértékeléskor legalább 40 score-t ér el.
+
+A legjobb 5 felöltő mentesül az elméleti zh alól.
+
+Ezen felül mindenki a helyezésének megfelelően további maximum 10 plusz pontban részesül. A pluszpontok a rangsorban betöltött hely alapján járnak, a legjobb 10%-ban kerülés (nem számolva a top5-öt) 10, 20%-ba 9, ... pluszpontot ér.

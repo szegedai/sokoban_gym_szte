@@ -36,9 +36,9 @@ class SokobanEnv(gym.Env):
         self.num_step = 0
         self.prev_num_correct_boxes = 0
 
-        self.grid = np.zeros(self.size, dtype=int)
-        self._player_location = (1, 1)
-        self._target_locations = [(5, 5), (5, 6)]
+        self.grid = None
+        self._player_location = None
+        self._target_locations = None
 
         # 0: empty, 1: wall, 2: box, 3: target, 4: player
         self.observation_space = spaces.Box(low=0, high=4, shape=self.padded_size, dtype=int)

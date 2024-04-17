@@ -1,11 +1,14 @@
-from agent.agent import Agent
-from sokoban_gym.envs.sokoban_env import SokobanEnv
-import gymnasium as gym
-from utils.eval_utils import evaluate_agent
+# Ha az ágenst szeretnéd módosítani, pl másik algoritmust akarsz használni, másik könyvtára, 
+# saját megfigyeléseket... akkor a /content/agent/agent.py fájlt kell módosítanod.
 
-# Környezet létrehozása
-env = gym.make('Sokoban-v1', size=(5, 5), padded_size=(8, 8), num_boxes=2, render_mode='rgb_array')
+# ⚠⚠⚠ Vigyázz, colab-ban a fájlok módosítasai el fognak vesztni, így ha itt akarod szerkeszteni
+# nem árt minden lépés után egy biztonsági mentést készíteni róla ⚠⚠⚠
+from utils.eval_utils import evaluate_agent_competition
 
-agent = Agent(env)
-
-print(evaluate_agent(env, agent, 100))
+# Az evaluate_agent_competition függvény végzi a modell kiértékelést. A függvény a githubon
+# feltüntetett táblázatnak megfelelően 400 feladatot futtat le. A maximálisan lefutatott 
+# feladatok számát az `max_task_num` paraméter segítségével állíthatjátok.
+# A feladatok száma csak 40 többszöröse lehet, így ha nem 40-el osztható értéket kap
+# a függvény, akkor a feladatok száma a 40 azon legnagyobb többszöröse lesz,
+# ami még kisebb a paraméterül kapott értéknél.
+evaluate_agent_competition(max_task_num=120)

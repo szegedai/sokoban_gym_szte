@@ -362,6 +362,9 @@ def generate_and_convert_room(**kwargs):
     if isinstance(kwargs['num_boxes'], list):
         kwargs['num_boxes'] = random.choice(kwargs['num_boxes'])
 
+    if isinstance(kwargs['dim'], list):
+        kwargs['dim'] = random.choice(kwargs['dim'])
+
     padded_size = kwargs['padded_size']
     kwargs.pop('padded_size')
 
