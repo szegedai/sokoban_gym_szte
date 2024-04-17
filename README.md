@@ -94,7 +94,7 @@ A kiértékelő halmazban az alábbi méretű és darabszámú pályák vannak:
 
 A rendszer egyaránt használható Google Colabon és lokálisan is. A környezet egy átlagos laptop processzorán is kényelmesen futtatható.
 
-Példa [Colab notebook](https://colab.research.google.com/drive/1hDlN6tgv2bRXcPK__GNrzTeX0WtrqH5H?usp=sharing).
+Példa [Colab notebook](https://colab.research.google.com/drive/1y5pph3rvIUb8dLCLntNUC-Z-LRW283xi?usp=sharing).
 
 Az alábbi útmutatóban [conda](https://docs.conda.io/en/latest/) virtuális környezetet fogunk használni.
 
@@ -189,7 +189,7 @@ A HuggingFace repository-ba mindent fel kell tölteni, ami szükséges a kód fu
 
 ### Példa
 
-Az alábbi [notebook](<!-- TODO -->), illetve a lenti parancsok megmutatják hogyan tudtok betanítani, leellenőrizni és feltöteni a Hugging Face-re egy ágenst.
+Az alábbi [notebook](https://colab.research.google.com/drive/1y5pph3rvIUb8dLCLntNUC-Z-LRW283xi?usp=sharing), illetve a lenti parancsok megmutatják hogyan tudtok betanítani, leellenőrizni és feltöteni a Hugging Face-re egy ágenst.
 
 A modellt betíníthatod a [train.py](train.py) fájl segítségével, ez létre fog hozni egy modellt az *agent* mappában.
 ```bash
@@ -236,3 +236,5 @@ Fontos, hogy a záró / szükséges.
 A kötelező teljesítéséhez fel kell töltened egy rendszert, ami a szerveren történő kiértékeléskor legalább 40 score-t ér el.
 
 A legjobb 5 felöltő mentesül az elméleti zh alól.
+
+Ezen felül mindenki a helyezésének megfelelően további maximum 10 plusz pontban részesül. A pluszpontok a rangsorban betöltött hely alapján járnak, a legjobb 10%-ban kerülés (nem számolva a top5-öt) 10, 20%-ba 9, ... pluszpontot ér.
