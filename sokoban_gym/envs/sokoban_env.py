@@ -23,6 +23,14 @@ colors = {
     4: '\033[31m'  # Red
 }
 
+bg_colors = {
+    0: '\033[40m',  # Black
+    1: '\033[47m',  # Reset color
+    2: '\033[44m',  # Blue
+    3: '\033[42m',  # Green
+    4: '\033[41m'  # Red
+}
+
 
 class SokobanEnv(gym.Env):
     metadata = {'render_modes': ['text', 'rgb_array']}
@@ -163,7 +171,7 @@ class SokobanEnv(gym.Env):
         if self.render_mode == 'text':
             for row in self.grid:
                 for element in row:
-                    print(colors[element] + str(element), end=' ')
+                    print(bg_colors[element] + str(element), end=' ')
                 print('\033[0m')
 
 
